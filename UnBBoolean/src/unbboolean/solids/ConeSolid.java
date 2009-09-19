@@ -35,7 +35,7 @@ public class ConeSolid extends PrimitiveSolid
 		this.rayX = rayX;
 		this.rayZ = rayZ;
 						
-		loadCoordinateFile(new File("coordinates/cone.sld"), color);
+		setData(DefaultCoordinates.DEFAULT_CONE_VERTICES, DefaultCoordinates.DEFAULT_CONE_COORDINATES, color);
 		scale(rayX, height, rayZ);
 	}
 	

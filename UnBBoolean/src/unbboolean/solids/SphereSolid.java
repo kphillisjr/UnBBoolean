@@ -35,7 +35,7 @@ public class SphereSolid extends PrimitiveSolid
 		this.rayZ = rayZ;
 		this.name = name;
 		
-		loadCoordinateFile(new File("coordinates/sphere.sld"), color);
+		setData(DefaultCoordinates.DEFAULT_SPHERE_VERTICES, DefaultCoordinates.DEFAULT_SPHERE_COORDINATES, color);
 		scale(rayX, rayY, rayZ);
 	}
 	
