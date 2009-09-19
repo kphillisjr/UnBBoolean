@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
@@ -121,7 +122,7 @@ public class Solid extends Shape3D
 		Color3f[] newColors = new Color3f[colors.length];
 		for(int i=0;i<newColors.length;i++)
 		{
-			newColors[i] = (Color3f)colors[i].clone();
+			newColors[i] = colors[i];
 		}
 		return newColors;
 	}
@@ -146,9 +147,9 @@ public class Solid extends Shape3D
 	//---------------------------------------SETS-----------------------------------//
 	
 	/**
-	 * Sets the solid data. An exception may occur in the case of abnormal arrays 
-	 * (indices making references to inexistent vertices, there are less colors 
-	 * than vertices...)
+	 * Sets the solid data. Each vertex may have a different color. An exception may 
+	 * occur in the case of abnormal arrays (e.g., indices making references to  
+	 * inexistent vertices, there are less colors than vertices...)
 	 * 
 	 * @param vertices array of points defining the solid vertices
 	 * @param indices array of indices for a array of vertices
@@ -164,7 +165,7 @@ public class Solid extends Shape3D
 			for(int i=0;i<vertices.length;i++)
 			{
 				this.vertices[i] = (Point3d)vertices[i].clone();
-				this.colors[i] = (Color3f)colors[i].clone();
+				this.colors[i] = colors[i];
 			}
 			System.arraycopy(indices, 0, this.indices, 0, indices.length);
 		
@@ -173,16 +174,19 @@ public class Solid extends Shape3D
 	}
 	
 	/**
-	 * Sets the solid color (all the vertices with the same color)
+	 * Sets the solid data. Defines the same color to all the vertices. An exception may 
+	 * may occur in the case of abnormal arrays (e.g., indices making references to  
+	 * inexistent vertices...)
 	 * 
-	 * @param color solid color
+	 * @param vertices array of points defining the solid vertices
+	 * @param indices array of indices for a array of vertices
+	 * @param color the color of the vertices (the solid color) 
 	 */
-	public void setColor(Color3f color)
+	public void setData(Point3d[] vertices, int[] indices, Color3f color)
 	{
-		for(int i=0;i<vertices.length;i++)
-		{
-			colors[i] = (Color3f)color.clone();
-		}
+		Color3f[] colors = new Color3f[vertices.length];
+		Arrays.fill(colors, color);
+		setData(vertices, indices, colors);
 	}
 	
 	//-------------------------GEOMETRICAL_TRANSFORMATIONS-------------------------//
@@ -358,7 +362,7 @@ public class Solid extends Shape3D
 			}
 			
 			colors = new Color3f[vertices.length];
-			setColor(color);
+			Arrays.fill(colors, color);
 			
 			defineGeometry();
 		}

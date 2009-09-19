@@ -35,7 +35,7 @@ public class CylinderSolid extends PrimitiveSolid
 		this.rayX = rayX;
 		this.rayZ = rayZ;
 						
-		loadCoordinateFile(new File("coordinates/cylinder.sld"), color);
+		setData(DefaultCoordinates.DEFAULT_CYLINDER_VERTICES, DefaultCoordinates.DEFAULT_CYLINDER_COORDINATES, color);
 		scale(rayX, height, rayZ);
 	}
 	

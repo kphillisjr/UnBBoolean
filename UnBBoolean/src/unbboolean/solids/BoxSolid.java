@@ -35,7 +35,7 @@ public class BoxSolid extends PrimitiveSolid
 		this.height = height;
 		this.width = width;
 						
-		loadCoordinateFile(new File("coordinates/box.sld"), color);
+		setData(DefaultCoordinates.DEFAULT_BOX_VERTICES, DefaultCoordinates.DEFAULT_BOX_COORDINATES, color);
 		scale(width, height, length);
 	}
 	
