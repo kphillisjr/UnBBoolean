@@ -7,8 +7,8 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import unbboolean.bool.Solid;
 import unbboolean.gui.solidpanels.InvalidBooleanOperationException;
+import unbboolean.j3dbool.Solid;
 
 /**
  * Solid class representing a component of a CSG Tree

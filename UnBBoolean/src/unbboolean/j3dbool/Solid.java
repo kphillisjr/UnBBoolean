@@ -1,4 +1,4 @@
-package unbboolean.bool;
+package unbboolean.j3dbool;
 
 import java.io.BufferedReader;
 import java.io.File;

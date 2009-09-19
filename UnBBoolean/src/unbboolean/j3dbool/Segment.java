@@ -1,4 +1,4 @@
-package unbboolean.bool;
+package unbboolean.j3dbool;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;

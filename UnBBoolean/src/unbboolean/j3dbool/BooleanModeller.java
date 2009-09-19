@@ -1,4 +1,4 @@
-package unbboolean.bool;
+package unbboolean.j3dbool;
 
 import java.util.ArrayList;
 import javax.vecmath.Color3f;
