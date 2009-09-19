@@ -25,6 +25,8 @@ public class SceneGraphManager
 	private BranchGroup solidsBG;
 	/** behavior to be able to pick the solids */
 	private GeneralPickBehavior pickBehavior;
+	/** if solid must be presented as wireframe or renderized normally */
+	protected boolean wireframeView = false;
 	
 	/**
 	 * Constructs a SceneGraphManager that shows the solids into the received canvas and
@@ -88,6 +90,8 @@ public class SceneGraphManager
 	 */
 	public void addSolid(CSGSolid solid)
 	{
+		solid.setWireframeView(wireframeView);
+		
 		BranchGroup solidBG = new BranchGroup();
 		solidBG.setCapability(BranchGroup.ALLOW_DETACH);
 		solidBG.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
@@ -149,12 +153,32 @@ public class SceneGraphManager
 	}
 	
 	/**
-	 * Sets move mode of
+	 * Sets move mode off
 	 * 
 	 * @param solid solid to be selected after the move mode is off 
 	 */
 	public void unsetMoveMode(CSGSolid solid)
 	{
 		pickBehavior.unsetMoveMode(solid);
+	}
+	
+	/**
+	 * Defines if solids must be presented as wireframe or renderized normally 
+	 * 
+	 * @param wireframeView true to the solid be presented as wireframe, false to be renderized normally
+	 */
+	public void setWireFrameView(boolean wireFrameView)
+	{
+		this.wireframeView = wireFrameView;
+		
+		BranchGroup bg;
+		CSGSolid solid;
+		Enumeration list = solidsBG.getAllChildren();
+		while(list.hasMoreElements())
+		{
+			bg = (BranchGroup)list.nextElement();
+			solid = (CSGSolid)bg.getChild(0);
+			solid.setWireframeView(wireFrameView);
+		}
 	}
 }

@@ -27,6 +27,7 @@ import java.net.URI;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.swing.Box;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,12 +61,14 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	private JMenuItem saveMenuItem;
 	/** item to load a solid */
 	private JMenuItem loadMenuItem;
+	/** item to finish the program */
+	private JMenuItem exitMenuItem;
 	/** item to show a help page */
 	private JMenuItem helpMenuItem;
 	/** item to show information about the application */
 	private JMenuItem aboutMenuItem;
-	/** item to finish the program */
-	private JMenuItem exitMenuItem;
+	/** check box to change to wireframe view */
+	private JCheckBox wireframeViewCheckBox;
 	/** panel where the canvas is */
 	private JPanel canvasPanel;
 	/** manager of the scene graph where the solids are */
@@ -112,11 +115,21 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		loadMenuItem.addActionListener(this);
 		exitMenuItem = new JMenuItem("Exit");
 		exitMenuItem.addActionListener(this);
+		JMenu optionsMenu = new JMenu("Options");
 		JMenu helpMenu = new JMenu("Help");
 		helpMenuItem = new JMenuItem("Help");
 		helpMenuItem.addActionListener(this);
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.addActionListener(this);
+		
+		wireframeViewCheckBox = new JCheckBox("Wireframe View");
+		wireframeViewCheckBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				sceneGraphManager.setWireFrameView(wireframeViewCheckBox.isSelected());				
+			}
+		});
 
 		//menu hierarchy
 		setJMenuBar(menuBar);
@@ -125,6 +138,8 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		fileMenu.add(loadMenuItem);
 		fileMenu.addSeparator();
 		fileMenu.add(exitMenuItem);
+		menuBar.add(optionsMenu);
+		optionsMenu.add(wireframeViewCheckBox);
 		menuBar.add(helpMenu);
 		helpMenu.add(helpMenuItem);
 		helpMenu.add(aboutMenuItem);
