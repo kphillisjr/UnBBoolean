@@ -3,9 +3,9 @@ package unbboolean.solids;
 import java.util.ArrayList;
 import javax.vecmath.Matrix4d;
 
-import unbboolean.bool.BooleanModeller;
-import unbboolean.bool.Solid;
 import unbboolean.gui.solidpanels.InvalidBooleanOperationException;
+import unbboolean.j3dbool.BooleanModeller;
+import unbboolean.j3dbool.Solid;
 
 /**
  * Class representing a compound solid 
