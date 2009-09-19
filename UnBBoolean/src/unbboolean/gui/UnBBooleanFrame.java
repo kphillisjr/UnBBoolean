@@ -3,6 +3,8 @@ package unbboolean.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -21,10 +23,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -55,6 +60,10 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	private JMenuItem saveMenuItem;
 	/** item to load a solid */
 	private JMenuItem loadMenuItem;
+	/** item to show a help page */
+	private JMenuItem helpMenuItem;
+	/** item to show information about the application */
+	private JMenuItem aboutMenuItem;
 	/** item to finish the program */
 	private JMenuItem exitMenuItem;
 	/** panel where the canvas is */
@@ -73,7 +82,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	/** Constructs a UnBBoolean object with the initial configuration. */					
 	public UnBBooleanFrame()
 	{
-		setTitle("UnBBoolean");
+		setTitle("UnBBoolean v1.1");
 		Container contentPane = this.getContentPane();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(640, 480);
@@ -95,9 +104,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 						
 		//1 - MENU_BAR
 		JMenuBar menuBar = new JMenuBar();
-		//menu 'file'
 		JMenu fileMenu = new JMenu("File");
-		//menu item 'exit'
 		saveMenuItem = new JMenuItem("Save");
 		saveMenuItem.addActionListener(this);
 		saveMenuItem.setEnabled(false);
@@ -105,6 +112,12 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		loadMenuItem.addActionListener(this);
 		exitMenuItem = new JMenuItem("Exit");
 		exitMenuItem.addActionListener(this);
+		JMenu helpMenu = new JMenu("Help");
+		helpMenuItem = new JMenuItem("Help");
+		helpMenuItem.addActionListener(this);
+		aboutMenuItem = new JMenuItem("About");
+		aboutMenuItem.addActionListener(this);
+
 		//menu hierarchy
 		setJMenuBar(menuBar);
 		menuBar.add(fileMenu);
@@ -112,6 +125,9 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		fileMenu.add(loadMenuItem);
 		fileMenu.addSeparator();
 		fileMenu.add(exitMenuItem);
+		menuBar.add(helpMenu);
+		helpMenu.add(helpMenuItem);
+		helpMenu.add(aboutMenuItem);
 		
 		//2 - MAIN_PANEL
 		JSplitPane splitPanel = new JSplitPane();
@@ -196,6 +212,14 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		else if (source==exitMenuItem)
 		{
 			System.exit(0);
+		}
+		else if(source==helpMenuItem)
+		{
+			showHelpPage();
+		}
+		else if(source==aboutMenuItem)
+		{
+			showAboutDialog();			
 		}
 	}
 	
@@ -283,6 +307,41 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 				JOptionPane.showMessageDialog (this,"Error, save aborted.","Error",JOptionPane.ERROR_MESSAGE);
 			}
  		}
+	}
+	
+	/** Show help page*/
+	private void showHelpPage()
+	{
+		try
+		{
+			Desktop.getDesktop().browse(new URI("help.html"));
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(this, "Error. Please try to open the file " + System.getProperty("user.dir") + File.separator + "help.html by yourself.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	/** show information about de application (author, home page...) */	
+	private void showAboutDialog()
+	{
+		Box aboutPanel = Box.createVerticalBox();
+				
+		JLabel labelTitulo = new JLabel("UnBBoolean v1.1");
+		labelTitulo.setFont(new Font(null, Font.BOLD, 16));
+		aboutPanel.add(labelTitulo);
+		
+		aboutPanel.add(Box.createVerticalStrut(5));
+		
+		aboutPanel.add(new JLabel("Author: Danilo Balby (danbalby@yahoo.com)"));
+		
+		Box linkPanel = Box.createHorizontalBox();
+		linkPanel.setAlignmentX(Box.LEFT_ALIGNMENT);
+		linkPanel.add(new JLabel("Homepage: "));
+		linkPanel.add(new LinkButton("http://unbboolean.sourceforge.net/"));
+		aboutPanel.add(linkPanel);
+		
+		JOptionPane.showMessageDialog(this, aboutPanel, "About", JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	/**
