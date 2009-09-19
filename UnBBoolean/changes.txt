@@ -1,5 +1,6 @@
 UNBBOOLEAN - CHANGES
 
 V1.1
+*Wireframe view
 *Change the name of the boolean set operations package (bool to j3dbool)
 *Help menu

@@ -2,6 +2,7 @@ package unbboolean.solids;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Material;
+import javax.media.j3d.PolygonAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -23,6 +24,8 @@ public abstract class CSGSolid extends Solid
 	protected Matrix4d transformMatrix;
 	/** parent on a CSGTree */
 	protected CompoundSolid parent;
+	/** if solid must be presented as wireframe or renderized normally */
+	protected boolean wireframeView = false;
 	
 	/** Constructs a default CSGSolid */
 	public CSGSolid()
@@ -243,18 +246,19 @@ public abstract class CSGSolid extends Solid
 		Appearance appearance = new Appearance();
 		appearance.setCapability(Appearance.ALLOW_MATERIAL_READ);
 		
-		//PolygonAttributes polygonAtt = new PolygonAttributes();
-		//polygonAtt.setCullFace(PolygonAttributes.CULL_NONE);
-		//polygonAtt.setPolygonMode(PolygonAttributes.POLYGON_LINE);
-		//polygonAtt.setBackFaceNormalFlip(true);
-		//appearance.setPolygonAttributes(polygonAtt);
-		
 		Material material = new Material();
 		material.setCapability(Material.ALLOW_COMPONENT_READ);
 		material.setDiffuseColor(1,1,1);
 		material.setAmbientColor(1,1,1);
 		material.setSpecularColor(0.0f, 0.0f, 0.0f);
 		appearance.setMaterial(material);
+
+		if(wireframeView)
+		{
+			PolygonAttributes polygonAtt = new PolygonAttributes();
+			polygonAtt.setPolygonMode(PolygonAttributes.POLYGON_LINE);
+			appearance.setPolygonAttributes(polygonAtt);
+		}
 		
 		setAppearance(appearance);
 	}
@@ -284,6 +288,18 @@ public abstract class CSGSolid extends Solid
 		}
 	}
 	
+
+	/**
+	 * Defines if solid must be presented as wireframe or renderized normally 
+	 * 
+	 * @param wireframeView true to the solid be presented as wireframe, false to be renderized normally
+	 */
+	public void setWireframeView(boolean wireframeView)
+	{
+		this.wireframeView = wireframeView;
+		unlight();
+	}
+	
 	//----------------------------------PRIVATES-------------------------------------//
 	
 	/** Creates an appearance for the solid */
@@ -292,18 +308,19 @@ public abstract class CSGSolid extends Solid
 		Appearance appearance = new Appearance();
 		appearance.setCapability(Appearance.ALLOW_MATERIAL_READ);
 		
-		//PolygonAttributes polygonAtt = new PolygonAttributes();
-		//polygonAtt.setCullFace(PolygonAttributes.CULL_NONE);
-		//polygonAtt.setPolygonMode(PolygonAttributes.POLYGON_LINE);
-		//polygonAtt.setBackFaceNormalFlip(true);
-		//appearance.setPolygonAttributes(polygonAtt);
-		
 		Material material = new Material();
 		material.setCapability(Material.ALLOW_COMPONENT_READ);
 		material.setDiffuseColor(0.3f, 0.3f, 0.3f);
 		material.setAmbientColor(0.3f, 0.3f, 0.3f);
 		material.setSpecularColor(0.0f, 0.0f, 0.0f);
 		appearance.setMaterial(material);
+
+		if(wireframeView)
+		{
+			PolygonAttributes polygonAtt = new PolygonAttributes();
+			polygonAtt.setPolygonMode(PolygonAttributes.POLYGON_LINE);
+			appearance.setPolygonAttributes(polygonAtt);
+		}
 		
 		setAppearance(appearance);
 	}
