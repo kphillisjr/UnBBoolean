@@ -84,6 +84,9 @@ public class CSGPanel extends JPanel implements ActionListener, SolidsSelectionL
 	private Component centerComponent;
 	/** component that is on the south */ 
 	private Component southComponent;
+	/** progress monitor of the boolean operations */
+	private J3DBoolProgressMonitor monitor;
+
 	
 	//----------------------------------CONSTRUCTORS---------------------------------//
 	
@@ -344,63 +347,85 @@ public class CSGPanel extends JPanel implements ActionListener, SolidsSelectionL
 	 * 
 	 * @param manager scene graph manager
 	 */
-	private void applyChange(SceneGraphManager manager)
+	private void applyChange(final SceneGraphManager manager)
 	{
-		int row = tree1.getSelectionRows()[0];
-		CSGSolid root = (CSGSolid)tree1.getModel().getRoot();
-		CSGSolid rootCopy = root.copy();
-		CSGSolid selectedSolid = (CSGSolid)tree1.getLastSelectedPathComponent();
+		final CSGSolid selectedSolid = (CSGSolid)tree1.getLastSelectedPathComponent();
 		
-		try
+		int numberOfOperations = selectedSolid.getDepth();
+		if(selectedSolid instanceof CompoundSolid)
 		{
-			if(selectedSolid instanceof CompoundSolid)
+			numberOfOperations++;
+		}
+		
+		monitor = new J3DBoolProgressMonitor(numberOfOperations)
+		{
+			public void executeBooleanOperations() 
 			{
-				CompoundSolid newCompound = (CompoundSolid)selectedSolid;
-				int selection = compoundSolidPanel.getSelected();
-				if(selection==CompoundSolidPanel.B_DIFFERENCE_A)
+				int row = tree1.getSelectionRows()[0];
+				CSGSolid root = (CSGSolid)tree1.getModel().getRoot();
+				CSGSolid rootCopy = root.copy();
+
+				try
 				{
-					newCompound.setOperationToInverseDifference();
-				}
-				else
-				{
-					newCompound.setOperation(selection);
-				}
-				selectSolid(root);
-			}
-			else
-			{
-				PrimitiveSolid newPrimitive = ((SolidPanel)centerComponent).getSolid();
-				newPrimitive.updateLocation(((PrimitiveSolid)selectedSolid).getLocation());
-							
-				if(!(root instanceof CompoundSolid))
-				{
-					manager.removeSelectedSolids();
-					manager.addSolid(newPrimitive);
-					selectSolid(newPrimitive);
-				}
-				else
-				{
-					CompoundSolid parent = selectedSolid.getParentSolid();
-					if(tree1.getModel().getIndexOfChild(parent,selectedSolid)==0)
+					boolean cancelRequested = false;
+					if(selectedSolid instanceof CompoundSolid)
 					{
-						parent.setOperator1(newPrimitive);
+						CompoundSolid newCompound = (CompoundSolid)selectedSolid;
+						int selection = compoundSolidPanel.getSelected();
+						if(selection==CompoundSolidPanel.B_DIFFERENCE_A)
+						{
+							cancelRequested = newCompound.setOperationToInverseDifference(monitor);
+						}
+						else
+						{
+							cancelRequested = newCompound.setOperation(selection, monitor);
+						}
+						selectSolid(root);
 					}
 					else
 					{
-						parent.setOperator2(newPrimitive);
+						PrimitiveSolid newPrimitive = ((SolidPanel)centerComponent).getSolid();
+						newPrimitive.updateLocation(((PrimitiveSolid)selectedSolid).getLocation());
+									
+						if(!(root instanceof CompoundSolid))
+						{
+							manager.removeSelectedSolids();
+							manager.addSolid(newPrimitive);
+							selectSolid(newPrimitive);
+						}
+						else
+						{
+							CompoundSolid parent = selectedSolid.getParentSolid();
+							if(tree1.getModel().getIndexOfChild(parent,selectedSolid)==0)
+							{
+								cancelRequested = parent.setOperator1(newPrimitive, monitor);
+							}
+							else
+							{
+								cancelRequested = parent.setOperator2(newPrimitive, monitor);
+							}
+							selectSolid(root);
+						}
 					}
-					selectSolid(root);
+					
+					if(cancelRequested)
+					{
+						manager.removeSolid(root);
+						manager.addSolid(rootCopy);
+						selectSolid(rootCopy);
+					}
 				}
+				catch(InvalidBooleanOperationException e)
+				{
+					JOptionPane.showMessageDialog(mainFrame,"An intermediate solid is empty.","Error", JOptionPane.ERROR_MESSAGE);
+					manager.removeSolid(root);
+					manager.addSolid(rootCopy);
+					selectSolid(rootCopy);
+				}
+				tree1.setSelectionRow(row);
 			}
-		}
-		catch(InvalidBooleanOperationException e)
-		{
-			JOptionPane.showMessageDialog(mainFrame,"An intermediate solid is empty.","Error", JOptionPane.ERROR_MESSAGE);
-			manager.removeSolid(root);
-			manager.addSolid(rootCopy);
-			selectSolid(rootCopy);
-		}
-		tree1.setSelectionRow(row);
+		};
+		monitor.start();
 	}
 	
 	/**
@@ -440,57 +465,70 @@ public class CSGPanel extends JPanel implements ActionListener, SolidsSelectionL
 	 * 
 	 * @param manager scene graph manager
 	 */
-	private void unsetMoveMode(SceneGraphManager manager)
+	private void unsetMoveMode(final SceneGraphManager manager)
 	{
-		int row = tree1.getSelectionRows()[0];
-		CSGSolid root = (CSGSolid)tree1.getModel().getRoot();
-		PrimitiveSolid solid = (PrimitiveSolid)tree1.getLastSelectedPathComponent();
-		
-		try
+		final PrimitiveSolid solid = (PrimitiveSolid)tree1.getLastSelectedPathComponent();
+		int numberOfOperations = solid.getDepth();
+		monitor = new J3DBoolProgressMonitor(numberOfOperations)
 		{
-			if(solid!=moveSolidPart)
+			public void executeBooleanOperations() 
 			{
-				CompoundSolid parent = solid.getParentSolid();
-				if(tree1.getModel().getIndexOfChild(parent,solid)==0)
+				int row = tree1.getSelectionRows()[0];
+				CSGSolid root = (CSGSolid)tree1.getModel().getRoot();				
+				try
 				{
-					parent.setOperator1(moveSolidPart);
+					boolean cancelRequested = false;
+					if(solid!=moveSolidPart)
+					{
+						CompoundSolid parent = solid.getParentSolid();
+						if(tree1.getModel().getIndexOfChild(parent,solid)==0)
+						{
+							cancelRequested = parent.setOperator1(moveSolidPart, monitor);
+						}
+						else
+						{
+							cancelRequested = parent.setOperator2(moveSolidPart, monitor);
+						}
+						manager.removeSolid(moveSolidPart);
+					}
+					else
+					{
+						cancelRequested = solid.updateParents(monitor);
+					}
+					
+					if(cancelRequested)
+					{
+						root = moveSolidBackup;
+					}
 				}
-				else
+				catch(InvalidBooleanOperationException e)
 				{
-					parent.setOperator2(moveSolidPart);
+					root = moveSolidBackup;
+					JOptionPane.showMessageDialog(mainFrame,"An intermediate solid is empty.","Error", JOptionPane.ERROR_MESSAGE);
 				}
-				manager.removeSolid(moveSolidPart);
+					
+				CSGSolid treeSolid;
+				for(int i=0;i<tree1.getRowCount();i++)
+				{
+					treeSolid = (CSGSolid)tree1.getPathForRow(i).getLastPathComponent(); 
+					if(treeSolid instanceof PrimitiveSolid)
+					{
+						manager.removeSolid(treeSolid);
+					}
+				}
+				
+				manager.addSolid(root);				
+				manager.unsetMoveMode(root);
+				moveMode = false;			
+					
+				tree1.setEnabled(true);
+				remove(southComponent);
+				add(okButton,"South");
+				selectSolid(root);
+				tree1.setSelectionRow(row);		
 			}
-			else
-			{
-				solid.updateParents();
-			}
-		}
-		catch(InvalidBooleanOperationException e)
-		{
-			root = moveSolidBackup;
-			JOptionPane.showMessageDialog(mainFrame,"An intermediate solid is empty.","Error", JOptionPane.ERROR_MESSAGE);
-		}
-			
-		CSGSolid treeSolid;
-		for(int i=0;i<tree1.getRowCount();i++)
-		{
-			treeSolid = (CSGSolid)tree1.getPathForRow(i).getLastPathComponent(); 
-			if(treeSolid instanceof PrimitiveSolid)
-			{
-				manager.removeSolid(treeSolid);
-			}
-		}
-		
-		manager.addSolid(root);				
-		manager.unsetMoveMode(root);
-		moveMode = false;			
-			
-		tree1.setEnabled(true);
-		remove(southComponent);
-		add(okButton,"South");
-		selectSolid(root);
-		tree1.setSelectionRow(row);		
+		};
+		monitor.start();
 	}
 
 	/**

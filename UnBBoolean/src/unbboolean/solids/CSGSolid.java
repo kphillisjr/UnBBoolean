@@ -8,6 +8,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import unbboolean.gui.J3DBoolProgressListener;
 import unbboolean.gui.solidpanels.InvalidBooleanOperationException;
 import unbboolean.j3dbool.Solid;
 
@@ -58,6 +59,24 @@ public abstract class CSGSolid extends Solid
 	public CompoundSolid getParentSolid()
 	{
 		return parent;
+	}
+	
+	/**
+	 * Gets de depth of the solid on the CSG tree. The depth is the
+	 * distance to the root (the depth of the root is 0)
+	 * 
+	 * @return depth of the solid on the CSG tree
+	 */
+	public int getDepth()
+	{
+		if(parent != null)
+		{
+			return parent.getDepth() + 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -228,12 +247,21 @@ public abstract class CSGSolid extends Solid
 		defineGeometry();
 	}
 	
-	/** Updates the parent location - called when the the coordinates were changed */
-	public void updateParents() throws InvalidBooleanOperationException
+	/** 
+	 * Updates the parent location - called when the the coordinates were changed
+	 *
+	 * @param listener must be notified when an operation is executed
+	 * @return true if the user has cancelled the process, false otherwise
+	 */
+	public boolean updateParents(J3DBoolProgressListener listener) throws InvalidBooleanOperationException
 	{
 		if(parent!=null)
 		{
-			parent.updateItselfAndParents();
+			return parent.updateItselfAndParents(listener);
+		}
+		else
+		{
+			return false;
 		}
 	}
 
