@@ -323,7 +323,6 @@ public class Object3D implements Cloneable
 				}
 			}
 		}
-		System.out.println("END OF SPLIT VERTICES");
 	}
 	
 	/**

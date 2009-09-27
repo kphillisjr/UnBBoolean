@@ -2,6 +2,7 @@ package unbboolean.gui.save;
 
 import java.io.Serializable;
 
+import unbboolean.gui.J3DBoolProgressListener;
 import unbboolean.solids.BoxSolid;
 import unbboolean.solids.CSGSolid;
 import unbboolean.solids.CompoundSolid;
@@ -18,6 +19,8 @@ public abstract class SaveSolid implements Serializable
 {
 	/** solid name */
 	protected String name;
+	
+	private static final long serialVersionUID = 8087186090574810434L;
 	
 	/** 
 	 * Constructs a SaveSolid object based on a CSGSolid object
@@ -62,7 +65,16 @@ public abstract class SaveSolid implements Serializable
 	/**
 	 * Gets the solid corresponding to this save solid
 	 * 
+	 * @param listener must be notified when an operation is executed
 	 * @return the solid corresponding to this save solid
 	 */
-	public abstract CSGSolid getSolid();
+	public abstract CSGSolid getSolid(J3DBoolProgressListener listener);
+	
+	/**
+	 * Gets the number of operations used to create the solid 
+	 * (the number of nodes on CSG tree)
+	 * 
+	 * @return the number of operations used to create the solid
+	 */
+	public abstract int getNumberOfOperations();
 }
