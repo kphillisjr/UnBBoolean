@@ -86,6 +86,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	private JFileChooser solidLoader;
 	/** dialog window to save solids*/
 	private JFileChooser solidSaver;
+	/** progress monitor of the boolean operations */
 	private J3DBoolProgressMonitor monitor;
 	
 	/** Constructs a UnBBoolean object with the initial configuration. */					

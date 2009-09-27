@@ -48,6 +48,7 @@ public abstract class J3DBoolProgressMonitor extends JDialog implements J3DBoolP
 		
 		setModal(true);
 		setTitle("Progress");
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		//center screen
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
