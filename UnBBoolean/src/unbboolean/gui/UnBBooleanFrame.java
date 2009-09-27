@@ -14,6 +14,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
+import java.util.Random;
+
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.swing.Box;
@@ -39,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.vecmath.Point3d;
 
@@ -81,6 +86,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	private JFileChooser solidLoader;
 	/** dialog window to save solids*/
 	private JFileChooser solidSaver;
+	private J3DBoolProgressMonitor monitor;
 	
 	/** Constructs a UnBBoolean object with the initial configuration. */					
 	public UnBBooleanFrame()
@@ -248,14 +254,25 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 			{
 				File selectedFile = solidLoader.getSelectedFile();
 				
-				SaveSolid saveSolid;
+				final SaveSolid saveSolid;
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream(selectedFile.getAbsolutePath()));
 				saveSolid = (SaveSolid)in.readObject();
 				in.close();
-				
-				CSGSolid solid = saveSolid.getSolid();
-				csgPanel.selectSolid(solid);
-				sceneGraphManager.addSolid(solid);
+
+				//execute boolean operations showing the progress
+				monitor = new J3DBoolProgressMonitor(saveSolid.getNumberOfOperations())
+				{
+					public void executeBooleanOperations() 
+					{
+						CSGSolid solid = saveSolid.getSolid(monitor);
+						if(solid != null)
+						{
+							csgPanel.selectSolid(solid);
+							sceneGraphManager.addSolid(solid);
+						}
+					}
+				};
+				monitor.start();
 			}
 			catch (FileNotFoundException e)
 			{
@@ -264,6 +281,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 			catch (Exception e)
 			{
 				JOptionPane.showMessageDialog (this,"Error, load aborted.","Error",JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 			}
 		}
 	}
@@ -315,11 +333,12 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 					writer.close();
 				}
 				
-				JOptionPane.showMessageDialog (this,"File saved successfully.","Message",JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog (this,"File saved successfully.","Message",JOptionPane.INFORMATION_MESSAGE);
 			}
 			catch (IOException e)
 			{
 				JOptionPane.showMessageDialog (this,"Error, save aborted.","Error",JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 			}
  		}
 	}

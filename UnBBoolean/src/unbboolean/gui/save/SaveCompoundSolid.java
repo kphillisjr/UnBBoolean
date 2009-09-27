@@ -1,5 +1,6 @@
 package unbboolean.gui.save;
 
+import unbboolean.gui.J3DBoolProgressListener;
 import unbboolean.gui.solidpanels.InvalidBooleanOperationException;
 import unbboolean.solids.CSGSolid;
 import unbboolean.solids.CompoundSolid;
@@ -18,6 +19,8 @@ public class SaveCompoundSolid extends SaveSolid
 	/** second solid operator */
 	private SaveSolid operator2;
 	
+	private static final long serialVersionUID = 152008386452776152L;
+	
 	/**
 	 * Constructs a SaveCompoundSolid object based on a CompoundSolid object
 	 * 
@@ -34,17 +37,57 @@ public class SaveCompoundSolid extends SaveSolid
 	/**
 	 * Gets the solid corresponding to this save solid
 	 * 
+	 * @param listener must be notified when an operation is executed 
 	 * @return the solid corresponding to this save solid
 	 */
-	public CSGSolid getSolid()
+	public CSGSolid getSolid(J3DBoolProgressListener listener)
 	{
 		try
 		{
-			return new CompoundSolid(name, operation, operator1.getSolid(), operator2.getSolid());
+			CSGSolid solid1 = operator1.getSolid(listener);
+			
+			if(solid1 == null)
+			{
+				//return null when operation is cancelled
+				return null;
+			}
+			
+			CSGSolid solid2 = operator2.getSolid(listener);
+			
+			if(solid2 == null)
+			{
+				//return null when operation is cancelled
+				return null;
+			}
+
+			CompoundSolid compound = new CompoundSolid(name, operation, solid1, solid2);
+				
+			//notifies the progress and gets if the operation was cancelled
+			boolean cancelRequested = listener.notifyProgress();
+			if(!cancelRequested)
+			{
+				return compound;
+			}
+			else
+			{	
+				//return null when operation is cancelled				
+				return null;
+			}
 		}
 		catch(InvalidBooleanOperationException e)
 		{
 			return null;
 		}
+	}
+	
+	/**
+	 * Gets the number of operations used to create the solid 
+	 * (the number of nodes on CSG tree)
+	 * 
+	 * @return the number of operations used to create the solid
+	 */
+	public int getNumberOfOperations()
+	{
+		return operator1.getNumberOfOperations() + operator2.getNumberOfOperations() + 1;
 	}
 }
