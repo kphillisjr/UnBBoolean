@@ -336,7 +336,7 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 				
 				JOptionPane.showMessageDialog (this,"File saved successfully.","Message",JOptionPane.INFORMATION_MESSAGE);
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				JOptionPane.showMessageDialog (this,"Error, save aborted.","Error",JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
