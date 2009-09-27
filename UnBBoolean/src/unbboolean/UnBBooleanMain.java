@@ -13,6 +13,6 @@ public class UnBBooleanMain
 	public static void main(String[] args)
 	{
 		UnBBooleanFrame frame = new UnBBooleanFrame();
-		frame.show();
+		frame.setVisible(true);
 	}
 }
