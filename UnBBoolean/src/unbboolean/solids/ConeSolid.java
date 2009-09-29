@@ -21,7 +21,7 @@ public class ConeSolid extends PrimitiveSolid
 	 * Constructs a customized Cone object
 	 * 
 	 * @param name cone name
-	 * @param length cone length
+	 * @param height cone height
 	 * @param rayX cone ray in X
 	 * @param rayZ cone ray in Z
 	 * @param color cone color

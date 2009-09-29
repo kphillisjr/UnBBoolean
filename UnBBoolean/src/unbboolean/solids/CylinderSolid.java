@@ -21,7 +21,7 @@ public class CylinderSolid extends PrimitiveSolid
 	 * Constructs a customized Cylinder object
 	 * 
 	 * @param name cylinder name
-	 * @param length cylinder length
+	 * @param height cylinder height
 	 * @param rayX cylinder ray in X
 	 * @param rayZ cylinder ray in Z
 	 * @param color cylinder color
