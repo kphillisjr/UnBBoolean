@@ -4,29 +4,27 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.Random;
 
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.GraphicsConfigTemplate3D;
@@ -43,7 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.vecmath.Point3d;
 
@@ -60,8 +57,6 @@ import unbboolean.solids.CSGSolid;
  */
 public class UnBBooleanFrame extends JFrame implements ActionListener
 {
-	/** panel to create new primitives */
-	private JPanel primitivesPanel;
 	/** item to save a solid */
 	private JMenuItem saveMenuItem;
 	/** item to load a solid */
@@ -95,19 +90,15 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 		setTitle("UnBBoolean v1.1");
 		Container contentPane = this.getContentPane();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(640, 480);
-		//setSize(Toolkit.getDefaultToolkit().getScreenSize());
-						
-		//change look and feel
-		//try 
-		//{
-		//	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		//}
-		//catch(Exception e) 
-		//{
-		//	e.printStackTrace();
-		//}
 		
+		//center screen
+		setSize(800,600);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		if(screenSize.width > 800 && screenSize.height > 600)
+		{
+			setLocation((screenSize.width - 800) / 2, (screenSize.height - 600) / 2);
+		}
+
 		//lines to work out the conflict between swing and canvas3d
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
@@ -347,14 +338,16 @@ public class UnBBooleanFrame extends JFrame implements ActionListener
 	/** Show help page*/
 	private void showHelpPage()
 	{
-		try
-		{
-			Desktop.getDesktop().browse(new URI("help.html"));
-		}
-		catch(Exception e)
-		{
-			JOptionPane.showMessageDialog(this, "Error. Please try to open the file " + System.getProperty("user.dir") + File.separator + "help.html by yourself.", "Error", JOptionPane.ERROR_MESSAGE);
-		}
+		new HelpDialog().setVisible(true);
+		
+//		try
+//		{
+//			Desktop.getDesktop().browse(new URI("help.html"));
+//		}
+//		catch(Exception e)
+//		{
+//			JOptionPane.showMessageDialog(this, "Error. Please try to open the file " + System.getProperty("user.dir") + File.separator + "help.html by yourself.", "Error", JOptionPane.ERROR_MESSAGE);
+//		}
 	}
 	
 	/** show information about de application (author, home page...) */	
