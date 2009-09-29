@@ -31,7 +31,7 @@ public class CylinderPanel extends SolidPanel
 	 * Constructs a panel setting the initial values
 	 * 
 	 * @param rayX cylinder ray in X
-	 * @param rayY cylinder ray in Y
+	 * @param rayZ cylinder ray in Z
 	 * @param height cylinder height
 	 */
 	public CylinderPanel(double rayX, double rayZ, double height)

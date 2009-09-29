@@ -165,7 +165,7 @@ public class SceneGraphManager
 	/**
 	 * Defines if solids must be presented as wireframe or renderized normally 
 	 * 
-	 * @param wireframeView true to the solid be presented as wireframe, false to be renderized normally
+	 * @param wireFrameView true to the solid be presented as wireframe, false to be renderized normally
 	 */
 	public void setWireFrameView(boolean wireFrameView)
 	{
